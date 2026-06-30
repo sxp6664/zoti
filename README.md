@@ -1,5 +1,5 @@
 # Zoti — AI Self Check-In System
-
+> Live demo: _coming soon_ · Repo: https://github.com/sxp6664/zoti
 A self-service hotel check-in kiosk. A guest finds their reservation (by last
 name, or by **scanning their ID** with OCR auto-fill), selects a room, pays
 (Stripe test mode), and receives a **digital room key** — no front-desk staff
