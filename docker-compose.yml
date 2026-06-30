@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: zoti
+      POSTGRES_PASSWORD: zoti
+      POSTGRES_DB: zoti
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zoti"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  backend:
+    build: ./backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      PG_DSN: "postgresql+psycopg2://zoti:zoti@postgres:5432/zoti"
+      REDIS_URL: "redis://redis:6379/0"
+      JWT_SECRET: "dev-secret-change-me"
+      OCR_PROVIDER: "mock"          # set to "textract" + provide AWS creds for real OCR
+      # STRIPE_SECRET_KEY: "sk_test_..."   # optional: enable real Stripe test mode
+    ports: ["8000:8000"]
+
+  frontend:
+    build: ./frontend
+    environment:
+      VITE_API_URL: "http://localhost:8000"
+    ports: ["5173:80"]
+    depends_on: ["backend"]
